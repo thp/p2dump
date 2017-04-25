@@ -1,0 +1,50 @@
+Privateer 2: The Darkening -- Data Dumper
+-----------------------------------------
+Ver 1.1 / 2017-04-25 Thomas Perl <thp.io>
+
+Usage: priv2dump <filename> [...]
+
+Supported container formats:
+ - BIGF
+ - IFF
+
+Supported compression formats:
+ - Deflate (using zlib)
+ - 0x10fb
+ - Huffman (based on HCl's decoder)
+
+Supported data formats:
+ - FAT ADPCM/PCM Audio ..................... WAV (using libsndfile)
+ - SHP (based on shp2bmp by Mario Brito) ... PNG (using libpng)
+ - Sets Base Image ......................... PNG
+ - BRender Pixmap (BRPM) ................... PNG
+ - Fonts ................................... PNG
+ - BRender 3D Model (BR3D) ................. OBJ/MTL
+ - Indexed String list ..................... TXT
+ - Movie List .............................. TXT
+
+======
+
+To convert the huffman.dot file to an image file, use Graphviz:
+
+    dot -Tpng huffman.dot -ohuffman.png
+
+Requirements:
+
+ - zlib
+ - libsndfile
+ - libpng
+
+Thanks to all the contributors of the Privateer 2 Thread here:
+
+http://www.wcnews.com/chatzone/threads/privateer-2-editing-and-extracting.25122
+
+References:
+
+http://simswiki.info/wiki.php?title=Sims_3:DBPF/Compression
+http://hcl.solsector.net/information/bigf.c
+http://hcl.solsector.net/p2huffman.zip
+http://hcl.solsector.net/information/chunk.c
+http://rr2000.toshiba-3.com/R4/BRENDER/
+http://www.wcnews.com/chatzone/threads/privateer-2-editing-and-extracting.25122/page-2#post-365906
+http://digitality.comyr.com/flyboy/lb2/progs/spr2bmp_source.zip
