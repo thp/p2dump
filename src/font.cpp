@@ -92,7 +92,9 @@ decode_font(const char *buf, size_t len, const std::string &filename_prefix)
             codepoint_utf8 ? codepoint_utf8 :
             priv2::format("%c", (def.codepoint > 31 && def.codepoint < 127) ? def.codepoint : '.');
 
-        total_width += def.width;
+        if (def.width) {
+            total_width += def.width + 1;
+        }
 
         if (def.width) {
             printf("Offset of char %3d / 0x%02x (%s): 0x%08x (width = %5d)\n",
@@ -132,11 +134,22 @@ decode_font(const char *buf, size_t len, const std::string &filename_prefix)
 
     printf("Font pixel intensity range: 0-%d\n", max_pixel);
 
+    std::string chardef;
     uint32_t xoffset = 0;
     for (auto &def: fontdef) {
+        if (!def.width) {
+            continue;
+        }
+
+        chardef += (char)def.codepoint;
+
         uint8_t *pixel_ptr = ((uint8_t *)(buf + def.offset + 4));
         for (int y=0; y<height; y++) {
             char *write_ptr = tmp.data() + (y * total_width + xoffset) * 4;
+            *write_ptr++ = (y == 0) ? 0xFF : 0;
+            *write_ptr++ = 0x00;
+            *write_ptr++ = (y == 0) ? 0xFF : 0;
+            *write_ptr++ = (y == 0) ? 0xFF : 0;
             for (int x=0; x<def.width; x++) {
                 uint32_t value = *pixel_ptr++;
                 // Scale pixel value to full intensity range
@@ -144,12 +157,13 @@ decode_font(const char *buf, size_t len, const std::string &filename_prefix)
                 *write_ptr++ = value & 0xFF; // r
                 *write_ptr++ = value & 0xFF; // g
                 *write_ptr++ = value & 0xFF; // b
-                *write_ptr++ = 0xFF; // a
+                *write_ptr++ = value & 0xFF; // a
             }
         }
-        xoffset += def.width;
+        xoffset += def.width + 1;
     }
 
+    priv2::write_file(chardef, "%s-font.txt", filename_prefix.c_str());
     priv2::write_png(tmp.data(), total_width, height, "%s-font.png", filename_prefix.c_str());
 }
 
