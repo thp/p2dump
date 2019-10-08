@@ -83,7 +83,7 @@ decode_font(const char *buf, size_t len, const std::string &filename_prefix)
 
     bool dump_to_console = false;
 
-    uint32_t total_width = 0;
+    uint32_t total_width = 1;
     const char *lut[] = {" ", "░", "▒", "▓", "█"};
     const size_t lutlen = sizeof(lut) / sizeof(lut[0]);
     for (auto &def: fontdef) {
@@ -94,9 +94,7 @@ decode_font(const char *buf, size_t len, const std::string &filename_prefix)
 
         if (def.width) {
             total_width += def.width + 1;
-        }
 
-        if (def.width) {
             printf("Offset of char %3d / 0x%02x (%s): 0x%08x (width = %5d)\n",
                     def.codepoint, def.codepoint, repr.c_str(), def.offset, def.width);
 
@@ -159,6 +157,10 @@ decode_font(const char *buf, size_t len, const std::string &filename_prefix)
                 *write_ptr++ = value & 0xFF; // b
                 *write_ptr++ = value & 0xFF; // a
             }
+            *write_ptr++ = (y == 0) ? 0xFF : 0;
+            *write_ptr++ = 0x00;
+            *write_ptr++ = (y == 0) ? 0xFF : 0;
+            *write_ptr++ = (y == 0) ? 0xFF : 0;
         }
         xoffset += def.width + 1;
     }
